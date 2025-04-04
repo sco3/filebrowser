@@ -135,8 +135,8 @@ func (u *User) Clean(baseScope string, fields ...string) error {
 
 	if u.Fs == nil {
 		scope := u.Scope
-		log.Printf("Scope: %v\n", scope)
-		if strings.HasPrefix(scope, "s3://") {
+		log.Printf("base scope: %v\n", baseScope)
+		if strings.HasPrefix(baseScope, "s3://") {
 
 			sess, _ := session.NewSession(&aws.Config{
 				Region: aws.String("eu-west-1"),
@@ -144,7 +144,9 @@ func (u *User) Clean(baseScope string, fields ...string) error {
 				//	"...", "...", "", //
 				//),
 			})
-			u.Fs = &s3FsRootDirHack{afs3.NewFs("s3://dz-bucket-1234", sess)}
+			bucket := baseScope[4:]
+			log.Printf("Bucket: %v\n", bucket)
+			u.Fs = &s3FsRootDirHack{afs3.NewFs(bucket, sess)}
 
 		} else {
 			scope = filepath.Join(baseScope, filepath.Join("/", scope)) //nolint:gocritic
