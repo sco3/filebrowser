@@ -138,7 +138,12 @@ user created with the credentials from options "username" and "password".`,
 		server := getRunParams(cmd.Flags(), d.store)
 		setupLog(server.Log)
 
-		root, err := filepath.Abs(server.Root)
+		root := server.Root
+		log.Printf("root: %v\n", root)
+		if !strings.HasPrefix(server.Root, "s3://") {
+			root, err = filepath.Abs(server.Root)
+		}
+		log.Printf("root: %v\n", root)
 		checkErr(err)
 		server.Root = root
 

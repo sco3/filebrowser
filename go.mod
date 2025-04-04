@@ -35,10 +35,12 @@ require (
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/asticode/go-astikit v0.42.0 // indirect
 	github.com/asticode/go-astits v1.13.0 // indirect
+	github.com/aws/aws-sdk-go v1.55.6 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dsnet/compress v0.0.2-0.20210315054119-f66993602bf5 // indirect
 	github.com/dsoprea/go-logging v0.0.0-20200710184922-b02d349568dd // indirect
 	github.com/dsoprea/go-utility/v2 v2.0.0-20221003172846-a3e1774ef349 // indirect
+	github.com/fclairamb/afero-s3 v0.3.1 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/go-errors/errors v1.5.1 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
@@ -46,6 +48,7 @@ require (
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/klauspost/compress v1.17.7 // indirect
 	github.com/klauspost/pgzip v1.2.6 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
