@@ -3,6 +3,7 @@ package users
 import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"io/fs"
 	"log"
 	"os"
 	"path"
@@ -95,6 +96,20 @@ func (m *s3FileRootDirHack) Stat() (os.FileInfo, error) {
 
 }
 
+func (m *s3FsRootDirHack) LstatIfPossible(name string) (os.FileInfo, bool, error) {
+	var info fs.FileInfo
+	var err error
+	if path.Clean(name) == "/" {
+		info = afs3.NewFileInfo(path.Base(name), true, 0, time.Unix(0, 0))
+	} else {
+		info, err = m.Fs.Stat(name)
+	}
+
+	log.Printf("name: %v dir: %v", info.Name(), info.IsDir())
+
+	return info, false, err // false = not a true Lstat
+}
+
 // Clean cleans up a user and verifies if all its fields
 // are alright to be saved.
 //
@@ -147,6 +162,7 @@ func (u *User) Clean(baseScope string, fields ...string) error {
 			bucket := baseScope[4:]
 			log.Printf("Bucket: %v\n", bucket)
 			u.Fs = &s3FsRootDirHack{afs3.NewFs(bucket, sess)}
+			log.Printf("Users Fs: %v", u.Fs)
 
 		} else {
 			scope = filepath.Join(baseScope, filepath.Join("/", scope)) //nolint:gocritic

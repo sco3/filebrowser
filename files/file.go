@@ -105,7 +105,7 @@ func NewFileInfo(opts *FileOptions) (*FileInfo, error) {
 
 func stat(opts *FileOptions) (*FileInfo, error) {
 	var file *FileInfo
-
+	log.Printf("fs: %v\n", opts.Fs)
 	if lstaterFs, ok := opts.Fs.(afero.Lstater); ok {
 		info, _, err := lstaterFs.LstatIfPossible(opts.Path)
 		if err != nil {
