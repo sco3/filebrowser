@@ -3,16 +3,12 @@ package users
 import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"io/fs"
+	"github.com/filebrowser/filebrowser/v2/s3"
+	"github.com/spf13/afero"
 	"log"
-	"os"
-	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
-	"time"
-
-	"github.com/spf13/afero"
 
 	afs3 "github.com/fclairamb/afero-s3"
 	"github.com/filebrowser/filebrowser/v2/errors"
@@ -60,54 +56,6 @@ var checkableFields = []string{
 	"Commands",
 	"Sorting",
 	"Rules",
-}
-
-type s3FsRootDirHack struct {
-	afero.Fs
-}
-
-type s3FileRootDirHack struct {
-	afero.File
-
-	fs *s3FsRootDirHack
-}
-
-func (m *s3FsRootDirHack) Stat(name string) (os.FileInfo, error) {
-
-	if path.Clean(name) == "/" {
-		return afs3.NewFileInfo(path.Base(name), true, 0, time.Unix(0, 0)), nil
-	}
-
-	return m.Fs.Stat(name)
-
-}
-
-func (m *s3FsRootDirHack) Open(name string) (afero.File, error) {
-
-	f, err := m.Fs.Open(name)
-
-	return &s3FileRootDirHack{File: f, fs: m}, err
-
-}
-
-func (m *s3FileRootDirHack) Stat() (os.FileInfo, error) {
-
-	return m.fs.Stat(m.File.Name())
-
-}
-
-func (m *s3FsRootDirHack) LstatIfPossible(name string) (os.FileInfo, bool, error) {
-	var info fs.FileInfo
-	var err error
-	if path.Clean(name) == "/" {
-		info = afs3.NewFileInfo(path.Base(name), true, 0, time.Unix(0, 0))
-	} else {
-		info, err = m.Fs.Stat(name)
-	}
-
-	log.Printf("name: %v dir: %v", info.Name(), info.IsDir())
-
-	return info, false, err // false = not a true Lstat
 }
 
 // Clean cleans up a user and verifies if all its fields
@@ -161,7 +109,7 @@ func (u *User) Clean(baseScope string, fields ...string) error {
 			})
 			bucket := baseScope[4:]
 			log.Printf("Bucket: %v\n", bucket)
-			u.Fs = &s3FsRootDirHack{afs3.NewFs(bucket, sess)}
+			u.Fs = &s3.S3FsRootDirHack{afs3.NewFs(bucket, sess)}
 			log.Printf("Users Fs: %v", u.Fs)
 
 		} else {

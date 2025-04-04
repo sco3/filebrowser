@@ -1,0 +1,63 @@
+package s3
+
+import (
+	"github.com/fclairamb/afero-s3"
+	"github.com/spf13/afero"
+	"io/fs"
+	"log"
+	"os"
+	"path"
+	"strings"
+	"time"
+)
+
+type S3FsRootDirHack struct {
+	afero.Fs
+}
+
+type S3FileRootDirHack struct {
+	afero.File
+
+	fs *S3FsRootDirHack
+}
+
+func (m *S3FsRootDirHack) Stat(name string) (os.FileInfo, error) {
+
+	if path.Clean(name) == "/" {
+		return s3.NewFileInfo(path.Base(name), true, 0, time.Unix(0, 0)), nil
+	}
+
+	return m.Fs.Stat(name)
+
+}
+
+func (m *S3FsRootDirHack) Open(name string) (afero.File, error) {
+
+	f, err := m.Fs.Open(name)
+
+	return &S3FileRootDirHack{File: f, fs: m}, err
+
+}
+
+func (m *S3FileRootDirHack) Stat() (os.FileInfo, error) {
+
+	return m.fs.Stat(m.File.Name())
+
+}
+
+func (m *S3FsRootDirHack) LstatIfPossible(name string) (os.FileInfo, bool, error) {
+	var info fs.FileInfo
+	var err error
+	if path.Clean(name) == "/" {
+		info = s3.NewFileInfo(path.Base(name), true, 0, time.Unix(0, 0))
+	} else {
+		if strings.HasSuffix(name, "/") {
+			name = strings.TrimSuffix(name, "/")
+		}
+		info, err = m.Fs.Stat(name)
+	}
+
+	log.Printf("name: %v dir: %v", info.Name(), info.IsDir())
+
+	return info, false, err // false = not a true Lstat
+}
