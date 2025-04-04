@@ -57,7 +57,7 @@ func (m *S3FsRootDirHack) LstatIfPossible(name string) (os.FileInfo, bool, error
 		info, err = m.Fs.Stat(name)
 	}
 
-	log.Printf("name: %v dir: %v", info.Name(), info.IsDir())
+	log.Printf("name: %v %v dir: %v", name, info.Name(), info.IsDir())
 
 	return info, false, err // false = not a true Lstat
 }

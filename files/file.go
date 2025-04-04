@@ -7,6 +7,7 @@ import (
 	"crypto/sha512"
 	"encoding/hex"
 	"errors"
+	"github.com/filebrowser/filebrowser/v2/s3"
 	"hash"
 	"image"
 	"io"
@@ -105,6 +106,13 @@ func NewFileInfo(opts *FileOptions) (*FileInfo, error) {
 
 func stat(opts *FileOptions) (*FileInfo, error) {
 	var file *FileInfo
+
+	if _, ok := opts.Fs.(*s3.S3FsRootDirHack); ok {
+
+		if strings.HasSuffix(opts.Path, "/") && len(opts.Path) > 1 {
+			opts.Path = strings.TrimSuffix(opts.Path, "/")
+		}
+	}
 
 	if lstaterFs, ok := opts.Fs.(afero.Lstater); ok {
 		info, _, err := lstaterFs.LstatIfPossible(opts.Path)
