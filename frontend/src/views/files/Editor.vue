@@ -1,62 +1,71 @@
 <template>
-  <div id="editor-container" >
+  <div id="editor-container">
     <header-bar>
-      <action icon="close" :label="t('buttons.close')" @action="close()" />
+      <action icon="close" :label="t('buttons.close')" @action="close()"/>
       <title>{{ fileStore.req?.name ?? "" }}</title>
 
       <action
-        v-if="authStore.user?.perm.modify"
-        id="save-button"
-        icon="save"
-        :label="t('buttons.save')"
-        @action="save()"
+          v-if="authStore.user?.perm.modify"
+          id="save-button"
+          icon="save"
+          :label="t('buttons.save')"
+          @action="save()"
       />
 
       <action
-        icon="preview"
-        :label="t('buttons.preview')"
-        @action="preview()"
-        v-show="isMarkdownFile"
+          icon="preview"
+          :label="t('buttons.preview')"
+          @action="preview()"
+          v-show="isMarkdownFile"
       />
     </header-bar>
 
-    <Breadcrumbs base="/files" noLink />
+    <Breadcrumbs base="/files" noLink/>
 
-    <div class='scrollable'>
-    <JsonViewer 
-    :value="fileContent2" 
-    :expand-depth="Infinity"
-    copyable
-    boxed 
-    expanded
-    :show-array-index="false"
-    />
+    <div
+        v-show="(!isJson) && isPreview && isMarkdownFile"
+        id="preview-container"
+        class="md_preview"
+        v-html="previewContent"
+    ></div>
+
+    <div class='scrollable'
+         v-show="isJson"
+    >
+      <JsonViewer
+          :value="jsonContent"
+          :expand-depth="Infinity"
+          copyable
+          boxed
+          expanded
+          :show-array-index="false"
+      />
     </div>
-    
+    <form v-show="!isJson && (!isPreview || !isMarkdownFile)" id="editor"></form>
   </div>
 </template>
 
 <script setup lang="ts">
 import JsonViewer from "vue-json-viewer";
 import 'vue-json-viewer/style.css'
-import { files as api } from "@/api";
+import {files as api} from "@/api";
 import buttons from "@/utils/buttons";
 import url from "@/utils/url";
-import ace, { Ace, version as ace_version } from "ace-builds";
+import ace, {Ace, version as ace_version} from "ace-builds";
 import modelist from "ace-builds/src-noconflict/ext-modelist";
 import "ace-builds/src-noconflict/ext-language_tools";
 
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import Action from "@/components/header/Action.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
-import { useAuthStore } from "@/stores/auth";
-import { useFileStore } from "@/stores/file";
-import { useLayoutStore } from "@/stores/layout";
-import { inject, onBeforeUnmount, onMounted, ref, watchEffect } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { useI18n } from "vue-i18n";
-import { getTheme } from "@/utils/theme";
-import { marked } from "marked";
+import {useAuthStore} from "@/stores/auth";
+import {useFileStore} from "@/stores/file";
+import {useLayoutStore} from "@/stores/layout";
+import {inject, onBeforeUnmount, onMounted, ref, watchEffect} from "vue";
+import {useRoute, useRouter} from "vue-router";
+import {useI18n} from "vue-i18n";
+import {getTheme} from "@/utils/theme";
+import {marked} from "marked";
 
 const $showError = inject<IToastError>("$showError")!;
 
@@ -64,7 +73,7 @@ const fileStore = useFileStore();
 const authStore = useAuthStore();
 const layoutStore = useLayoutStore();
 
-const { t } = useI18n();
+const {t} = useI18n();
 
 const route = useRoute();
 const router = useRouter();
@@ -74,23 +83,26 @@ const editor = ref<Ace.Editor | null>(null);
 const isPreview = ref(false);
 const previewContent = ref("");
 const isMarkdownFile =
-  fileStore.req?.name.endsWith(".md") ||
-  fileStore.req?.name.endsWith(".markdown");
+    fileStore.req?.name.endsWith(".md") ||
+    fileStore.req?.name.endsWith(".markdown");
 
-const fileContent2 = ref();
+const jsonContent = ref();
+const isJson = ref(false)
 
 watchEffect(() => {
   try {
-    fileContent2.value = JSON.parse(fileStore.req?.content || "{}");
+    jsonContent.value = JSON.parse(fileStore.req?.content || "{}");
+    isJson.value = true
   } catch {
-    fileContent2.value = fileStore.req?.content || "";
+    //fileContent2.value = fileStore.req?.content || "";
+    isJson.value = false
   }
 });
 
 
 onMounted(() => {
   window.addEventListener("keydown", keyEvent);
-  
+
 
   const fileContent = fileStore.req?.content || "";
 
@@ -109,8 +121,8 @@ onMounted(() => {
   });
 
   ace.config.set(
-    "basePath",
-    `https://cdn.jsdelivr.net/npm/ace-builds@${ace_version}/src-min-noconflict/`
+      "basePath",
+      `https://cdn.jsdelivr.net/npm/ace-builds@${ace_version}/src-min-noconflict/`
   );
 
   editor.value = ace.edit("editor", {
@@ -134,7 +146,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.removeEventListener("keydown", keyEvent);
-  
+
   editor.value?.destroy();
 });
 
@@ -179,7 +191,7 @@ const close = () => {
   fileStore.updateRequest(null);
 
   const uri = url.removeLastDir(route.path) + "/";
-  router.push({ path: uri });
+  router.push({path: uri});
 };
 
 const preview = () => {
@@ -192,8 +204,9 @@ const preview = () => {
 .jv-light .jv-string {
   color: #14588F !important; /* Your custom color */
 }
+
 .scrollable {
-   overflow-y: scroll;
+  overflow-y: scroll;
 }
 
 </style>
