@@ -61,3 +61,7 @@ func (m *S3FsRootDirHack) LstatIfPossible(name string) (os.FileInfo, bool, error
 
 	return info, false, err // false = not a true Lstat
 }
+
+func IsS3(fs afero.Fs) bool {
+	return fs.(*S3FsRootDirHack) != nil
+}

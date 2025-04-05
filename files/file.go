@@ -108,7 +108,6 @@ func stat(opts *FileOptions) (*FileInfo, error) {
 	var file *FileInfo
 
 	if _, ok := opts.Fs.(*s3.S3FsRootDirHack); ok {
-
 		if strings.HasSuffix(opts.Path, "/") && len(opts.Path) > 1 {
 			opts.Path = strings.TrimSuffix(opts.Path, "/")
 		}

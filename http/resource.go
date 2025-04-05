@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/filebrowser/filebrowser/v2/s3"
 	"io"
 	"net/http"
 	"net/url"
@@ -351,7 +352,7 @@ var diskUsage = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (
 		return errToStatus(err), err
 	}
 	fPath := file.RealPath()
-	if !file.IsDir {
+	if !file.IsDir || s3.IsS3(file.Fs) {
 		return renderJSON(w, r, &DiskUsageResponse{
 			Total: 0,
 			Used:  0,
