@@ -124,7 +124,12 @@ func (u *User) Clean(baseScope string, fields ...string) error {
 
 // FullPath gets the full path for a user's relative path.
 func (u *User) FullPath(path string) string {
-	return afero.FullBaseFsPath(u.Fs.(*afero.BasePathFs), path)
+
+	fs, ok := u.Fs.(*afero.BasePathFs)
+	if !ok {
+		return path
+	}
+	return afero.FullBaseFsPath(fs, path)
 }
 
 // CanExecute checks if an user can execute a specific command.
