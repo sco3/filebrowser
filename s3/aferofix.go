@@ -65,3 +65,17 @@ func (m *S3FsRootDirHack) LstatIfPossible(name string) (os.FileInfo, bool, error
 func IsS3(fs afero.Fs) bool {
 	return fs.(*S3FsRootDirHack) != nil
 }
+
+func (m *S3FsRootDirHack) RemoveAll(name string) error {
+	// workaround for remove all in s3
+	if m.Fs.Remove(name) == nil {
+		return nil
+	}
+	// simple remove did not work try original implementation
+
+	err := m.Fs.RemoveAll(name)
+	if err != nil {
+		return err
+	}
+	return nil
+}
