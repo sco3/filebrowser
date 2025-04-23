@@ -12,47 +12,47 @@
 
       <template #actions>
         <template v-if="!isMobile">
-          <action
+          <!--action
             v-if="headerButtons.share"
             icon="share"
             :label="t('buttons.share')"
             show="share"
-          />
-          <action
+          /-->
+          <!--action
             v-if="headerButtons.rename"
             icon="mode_edit"
             :label="t('buttons.rename')"
             show="rename"
-          />
-          <action
+          /-->
+          <!--action
             v-if="headerButtons.copy"
             id="copy-button"
             icon="content_copy"
             :label="t('buttons.copyFile')"
             show="copy"
-          />
-          <action
+          /-->
+          <!--action
             v-if="headerButtons.move"
             id="move-button"
             icon="forward"
             :label="t('buttons.moveFile')"
             show="move"
-          />
-          <action
+          /-->
+          <!--action
             v-if="headerButtons.delete"
             id="delete-button"
             icon="delete"
             :label="t('buttons.delete')"
             show="delete"
-          />
+          /-->
         </template>
 
-        <action
+        <!--action
           v-if="headerButtons.shell"
           icon="code"
           :label="t('buttons.shell')"
           @action="layoutStore.toggleShell"
-        />
+        /-->
         <action
           :icon="viewIcon"
           :label="t('buttons.switchView')"
@@ -65,13 +65,13 @@
           @action="download"
           :counter="fileStore.selectedCount"
         />
-        <action
+        <!-- action
           v-if="headerButtons.upload"
           icon="file_upload"
           id="upload-button"
           :label="t('buttons.upload')"
           @action="uploadFunc"
-        />
+        /-->
         <action icon="info" :label="t('buttons.info')" show="info" />
         <action
           icon="check_circle"
