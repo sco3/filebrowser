@@ -41,3 +41,4 @@ build/
 
 default.nix
 Dockerfile.dev
+__debug*
