@@ -4,13 +4,13 @@
       <action icon="close" :label="t('buttons.close')" @action="close()"/>
       <title>{{ fileStore.req?.name ?? "" }}</title>
 
-      <action
+      <!--action
           v-if="authStore.user?.perm.modify"
           id="save-button"
           icon="save"
           :label="t('buttons.save')"
           @action="save()"
-      />
+      /-->
 
       <action
           icon="preview"
