@@ -1,24 +1,9 @@
 <template>
-  <div
-    class="item"
-    role="button"
-    tabindex="0"
-    :draggable="isDraggable"
-    @dragstart="dragStart"
-    @dragover="dragOver"
-    @drop="drop"
-    @click="itemClick"
-    :data-dir="isDir"
-    :data-type="type"
-    :aria-label="name"
-    :aria-selected="isSelected"
-    :data-ext="getExtension(name).toLowerCase()"
-  >
+  <div class="item" role="button" tabindex="0" :draggable="isDraggable" @dragstart="dragStart" @dragover="dragOver"
+    @drop="drop" @click="itemClick" :data-dir="isDir" :data-type="type" :aria-label="name" :aria-selected="isSelected"
+    :data-ext="getExtension(name).toLowerCase()">
     <div>
-      <img
-        v-if="!readOnly && type === 'image' && isThumbsEnabled"
-        v-lazy="thumbnailUrl"
-      />
+      <img v-if="!readOnly && type === 'image' && isThumbsEnabled" v-lazy="thumbnailUrl" />
       <i v-else class="material-icons"></i>
     </div>
 
@@ -109,7 +94,8 @@ const humanSize = () => {
 };
 
 const humanTime = () => {
-  if (props.modified === "1970-01-01T01:00:00+01:00") {
+  //if (props.modified === "1970-01-01T01:00:00+01:00") {
+  if (props.modified === "") {
     return "—";
   }
   if (!props.readOnly && authStore.user?.dateFormat) {
