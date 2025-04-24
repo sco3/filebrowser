@@ -1,7 +1,9 @@
 package http
 
 import (
+	"bytes"
 	"errors"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -205,9 +207,15 @@ func rawFileHandler(w http.ResponseWriter, r *http.Request, file *files.FileInfo
 	}
 	defer fd.Close()
 
+	// Read the entire file into memory
+	data, err := io.ReadAll(fd)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
 	setContentDisposition(w, r, file)
 	w.Header().Add("Content-Security-Policy", `script-src 'none';`)
 	w.Header().Set("Cache-Control", "private")
-	http.ServeContent(w, r, file.Name, file.ModTime, fd)
+	http.ServeContent(w, r, file.Name, file.ModTime, bytes.NewReader(data))
 	return 0, nil
 }
