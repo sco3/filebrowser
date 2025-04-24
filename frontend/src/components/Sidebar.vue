@@ -80,28 +80,30 @@
         <span>{{ $t("sidebar.signup") }}</span>
       </router-link>
     </template>
-
+    <!--
     <div
       class="credits"
       v-if="isFiles && !disableUsedPercentage"
       style="width: 90%; margin: 2em 2.5em 3em 2.5em"
-    >
+    > 
       <progress-bar :val="usage.usedPercentage" size="small"></progress-bar>
       <br />
       {{ usage.used }} of {{ usage.total }} used
     </div>
-
+    -->
     <p class="credits">
       <span>
         <span v-if="disableExternal">File Browser</span>
-        <a
+        <!--a
           v-else
           rel="noopener noreferrer"
           target="_blank"
           href="https://github.com/filebrowser/filebrowser"
           >File Browser</a
-        >
+        -->
+        <!--
         <span> {{ " " }} {{ version }}</span>
+        -->
       </span>
       <span>
         <a @click="help">{{ $t("sidebar.help") }}</a>
