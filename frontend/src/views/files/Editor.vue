@@ -11,6 +11,12 @@
           :label="t('buttons.save')"
           @action="save()"
       /-->
+        <action
+          icon="file_download"
+          :label="t('buttons.download')"
+          @action="download"
+          :counter="fileStore.selectedCount"
+        />
 
       <action
           icon="preview"
@@ -167,6 +173,20 @@ const keyEvent = (event: KeyboardEvent) => {
   save();
 };
 
+const download = () => {
+  const content = editor.value?.getValue() || "";
+  const filename = fileStore.req?.name || "download.txt";
+
+  const blob = new Blob([content], { type: "text/plain" }); // Adjust MIME type as needed
+  const url = window.URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+
+  window.URL.revokeObjectURL(url);
+};
 
 const save = async () => {
   const button = "save";
