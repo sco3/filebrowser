@@ -109,6 +109,9 @@ const humanSize = () => {
 };
 
 const humanTime = () => {
+  if (props.modified === "1970-01-01T01:00:00+01:00") {
+    return "—";
+  }
   if (!props.readOnly && authStore.user?.dateFormat) {
     return dayjs(props.modified).format("L LT");
   }
