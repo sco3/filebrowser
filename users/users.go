@@ -3,17 +3,17 @@ package users
 import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
+	afs3 "github.com/fclairamb/afero-s3"
+	"github.com/filebrowser/filebrowser/v2/errors"
+	"github.com/filebrowser/filebrowser/v2/files"
+	"github.com/filebrowser/filebrowser/v2/rules"
 	"github.com/filebrowser/filebrowser/v2/s3"
 	"github.com/spf13/afero"
 	"log"
 	"path/filepath"
 	"regexp"
 	"strings"
-
-	afs3 "github.com/fclairamb/afero-s3"
-	"github.com/filebrowser/filebrowser/v2/errors"
-	"github.com/filebrowser/filebrowser/v2/files"
-	"github.com/filebrowser/filebrowser/v2/rules"
+	"sync"
 )
 
 // ViewMode describes a view mode.
@@ -23,6 +23,21 @@ const (
 	ListViewMode   ViewMode = "list"
 	MosaicViewMode ViewMode = "mosaic"
 )
+
+var (
+	s3Region string = "us-east-1"
+	once     sync.Once
+)
+
+func SetS3Region(region string) {
+	once.Do(func() {
+		s3Region = region
+	})
+}
+
+func getS3Region() string {
+	return s3Region
+}
 
 // User describes a user.
 type User struct {
@@ -102,7 +117,7 @@ func (u *User) Clean(baseScope string, fields ...string) error {
 		if strings.HasPrefix(baseScope, "s3://") {
 
 			sess, _ := session.NewSession(&aws.Config{
-				Region: aws.String("eu-west-1"),
+				Region: aws.String(getS3Region()),
 				//Credentials: credentials.NewStaticCredentials( //
 				//	"...", "...", "", //
 				//),

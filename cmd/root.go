@@ -60,6 +60,7 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.StringP("cert", "t", "", "tls certificate")
 	flags.StringP("key", "k", "", "tls key")
 	flags.StringP("root", "r", ".", "root to prepend to relative paths")
+	flags.StringP("s3-region", "R", "us-east-1", "S3 region")
 	flags.String("socket", "", "socket to listen to (cannot be used with address, port, cert nor key flags)")
 	flags.Uint32("socket-perm", 0666, "unix socket file permissions") //nolint:gomnd
 	flags.StringP("baseurl", "b", "", "base url")
@@ -208,6 +209,9 @@ func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
 
 	if val, set := getParamB(flags, "root"); set {
 		server.Root = val
+	}
+	if val, set := getParamB(flags, "s3-region"); set {
+		users.SetS3Region(val)
 	}
 
 	if val, set := getParamB(flags, "baseurl"); set {
