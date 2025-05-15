@@ -116,16 +116,17 @@ func (u *User) Clean(baseScope string, fields ...string) error {
 		log.Printf("base scope: %v\n", baseScope)
 		if strings.HasPrefix(baseScope, "s3://") {
 
+			region := getS3Region()
+			bucket := baseScope[4:]
+			log.Printf("Bucket: %v Region: %v\n", bucket, region)
+
 			sess, _ := session.NewSession(&aws.Config{
-				Region: aws.String(getS3Region()),
+				Region: aws.String(region),
 				//Credentials: credentials.NewStaticCredentials( //
 				//	"...", "...", "", //
 				//),
 			})
-			bucket := baseScope[4:]
-			log.Printf("Bucket: %v\n", bucket)
 			u.Fs = &s3.S3FsRootDirHack{afs3.NewFs(bucket, sess)}
-			log.Printf("Users Fs: %v", u.Fs)
 
 		} else {
 			scope = filepath.Join(baseScope, filepath.Join("/", scope)) //nolint:gocritic
