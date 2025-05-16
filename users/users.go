@@ -6,6 +6,7 @@ import (
 	afs3 "github.com/fclairamb/afero-s3"
 	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/files"
+	"github.com/filebrowser/filebrowser/v2/region"
 	"github.com/filebrowser/filebrowser/v2/rules"
 	"github.com/filebrowser/filebrowser/v2/s3"
 	"github.com/spf13/afero"
@@ -13,7 +14,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-	"sync"
 )
 
 // ViewMode describes a view mode.
@@ -23,21 +23,6 @@ const (
 	ListViewMode   ViewMode = "list"
 	MosaicViewMode ViewMode = "mosaic"
 )
-
-var (
-	s3Region string = "us-east-1"
-	once     sync.Once
-)
-
-func SetS3Region(region string) {
-	once.Do(func() {
-		s3Region = region
-	})
-}
-
-func getS3Region() string {
-	return s3Region
-}
 
 // User describes a user.
 type User struct {
@@ -116,7 +101,7 @@ func (u *User) Clean(baseScope string, fields ...string) error {
 		log.Printf("base scope: %v\n", baseScope)
 		if strings.HasPrefix(baseScope, "s3://") {
 
-			region := getS3Region()
+			region := region.GetS3Region()
 			bucket := baseScope[4:]
 			log.Printf("Bucket: %v Region: %v\n", bucket, region)
 

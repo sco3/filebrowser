@@ -26,6 +26,7 @@ import (
 	"github.com/filebrowser/filebrowser/v2/frontend"
 	fbhttp "github.com/filebrowser/filebrowser/v2/http"
 	"github.com/filebrowser/filebrowser/v2/img"
+	"github.com/filebrowser/filebrowser/v2/region"
 	"github.com/filebrowser/filebrowser/v2/settings"
 	"github.com/filebrowser/filebrowser/v2/storage"
 	"github.com/filebrowser/filebrowser/v2/users"
@@ -211,7 +212,7 @@ func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
 		server.Root = val
 	}
 	if val, set := getParamB(flags, "s3-region"); set {
-		users.SetS3Region(val)
+		region.SetS3Region(val)
 	}
 
 	if val, set := getParamB(flags, "baseurl"); set {
